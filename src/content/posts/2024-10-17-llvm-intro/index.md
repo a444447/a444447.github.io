@@ -1,0 +1,281 @@
+---
+title: "入门"
+date: 2024-10-17
+description: "LLVM, 最初是「low level virtual machine」的缩写，因为一开始只是以为作为一个优化方面的项目，但是后面变成编译器了，于是这个说法就没有了，但是简称还是保留了下来。"
+category: "技术"
+tags:
+  - "编译器"
+  - "llvm"
+draft: false
+---
+
+LLVM, 最初是「low level virtual machine」的缩写，因为一开始只是以为作为一个优化方面的项目，但是后面变成编译器了，于是这个说法就没有了，但是简称还是保留了下来。
+
+LLVM是一个 **编译器框架**, 因此需要前端(front-end)来将源代码解析并转换为LLVM中间表示(**LLVM IR**)。
+
+下面的图片是Clang/LLVM的简单架构，也就是把LLVM作为前端。在最初时，LLVM的前端是gcc, 但是后来Apple开发了Clang取代了它。我们也可以自己开发前端从而与LLVM配合起来，实现我们自定义的编程语言的编译器。
+
+> **现在带有Dragon Egg的GCC还是可以生成LLVM IR**
+
+<img src="https://pic3.zhimg.com/80/v2-e93d22914f2939017db6c6ff463cc2d8_1440w.webp" alt="img" style="zoom:50%;" />
+
+可以看出来，LLVM作为一个编译器框架，它是由各个模块组合来的，所谓框架意思就是说，我们可以基于LLVM提供的功能来开发自己的模块并集成在LLVM系统上，从而增加功能。
+
+**有关IR部分**
+
+llvm中有三种IR表示：
+
++ 可读的IR，以`.ll`结尾，这是一种类似汇编代码的能被人阅读的形式
+
++ 不可读的二进制IR,称为位码,后缀是`.bc`
+
++ 内存格式，它是保存在内存中的，因此也没有所谓的文件格式和后缀。它与gcc不同的是，对于gcc来说每个阶段结束都会生成一些中间过程文件，而llvm编译的中间数据都是内存格式的。
+  ```
+  由于编译的都是内存格式，所以默认情况下.ll,.bc都是不生成的，需要使用llvm工具的参数指定生成这些文件，比如llvm-as,llvm-dis
+  ```
+
+通过上图我们还注意到中间有一个`LLVM IR linker`。LLVM在前端（Clang）生成单个代码单元的IR后，将整个工程的IR都链接起来，同时做链接时优化。
+
+**有关后端**
+
+LLVM backend就是LLVM真正的后端，也被称为LLVM核心，包括编译、汇编、链接这一套，最后生成汇编文件或者目标码。这里的LLVM compiler和gcc中的compiler不一样，这里的LLVM compiler只是编译LLVM IR。
+
+**有关Clang**
+
+通常我们在命令行上调用的clang工具，是Clang驱动程序，因为LLVM本质上只是一个编译器框架，所以需要一个驱动程序把整个编译器的功能串起来，clang能够监控整个编译器的流程，即能够调用到Clang和LLVM的各种库，最终实现编译的功能。
+
+BTW，其实gcc也是驱动程序，由它将`cc`、`as`、`ld`等程序驱动起来。
+
+如果由clang来监控运行，则整个IR的阶段，IR的表示形式都是内存形式，这样就不会在编译过程中产生中间文件，提高了编译的效率。另一种方法是调用LLVM的工具，类似于gcc中的`cc`、`as`、`ld`一样，LLVM也有自己的工具，这样工具之间运行需要用户来控制输入输出，这时的IR表示形式就是硬盘格式，可以是LLVM汇编（`.ll`），也可以是位码（`.bc`）。
+
+## TableGen
+
+TableGen是一种语言,专门用于描述LLVM内部的各种数据结构和模式的域特定语言(DSL)。通过TableGen文件，开发者可以以声明性方式定义复杂的结构、指令集、优化规则等。它的功能就是读取一个文件（td文件），解析这个文件，输出成不同的结果文件（比如说C++语法的.inc后缀文件）。现在来说，其服务的功能模块主要有2个，分别是LLVM后端的**平台不相关**的[代码生成](https://zhida.zhihu.com/search?content_id=119524076&content_type=Article&match_order=1&q=代码生成&zhida_source=entity)（`target independent code generator`）阶段，以及Clang前端的代码诊断功能。
+
+
+`llvm-tblgen` 则负责将这些定义转换为C++代码或其他所需的输出。`llvm-tblgen`在正常的编译流程中并不参与，这是额外的开发工具，可以用来调度整个TableGen工作流。
+
+> TableGen的前端与后端的工作分别是:
+>
+> **前端：** 
+>
+> + **解析器（Parser）**：负责读取和解析 **TableGen** 的输入文件（通常是 `.td` 文件），将其转换为 **TableGen** 的内部表示（如抽象语法树，AST）。
+>
+>   **语义分析（Semantic Analysis）**：检查输入文件的语法和语义是否正确，确保定义的一致性和正确性。例如，验证类的继承关系、属性类型等。
+>
+> **后端**指的是 **TableGen** 根据前端生成的内部表示，生成具体输出的部分
+>
+> + **代码生成器（Code Generators）**：根据不同的需求，生成相应的代码或数据结构。例如，生成指令选择器代码、寄存器描述代码等。
+>
+> + **输出格式**：可以是 C++ 代码、头文件、数据表，甚至是其他格式的文件，具体取决于 **TableGen** 后端的设计和用途。
+
+### 用法
+
+首先要明确，TableGen主要是用来 **描述信息的**（强类型的语法），这也就是说它几乎是没有 **控制流的语法规范**，同时也不关心语言本身的意义是否正确——这是由TableGen后端关心的。
+
+**注释**
+
+可以使用`//`或者`/* */`
+
+**数据类型**
+
+TableGen是一个强类型语言，它的覆盖范围非常广，从位类型到dag类型都有，甚至还支持类参数类型的扩展和列表的扩展。
+
+主要类型有:
+
+\- `bit`：一位就是表示一个布尔值，比如0或者1；
+
+\- `int`：表示一个32位的整形值，比如5；
+
+\- `string`：表示一个有序的固定长度的字符序列，比如“add”；
+
+\- `code`：表示一个代码片段，可以是单行或多行，不过其实和`string`本质一样，只是展示的意义不同而已；
+
+\- `bits<n>`：`bit`的扩展，可以指定n个位同时赋值，比如当n=3，可以是010，指定位模式时特别常用；
+
+\- `list<ty>`：很灵活的一个类型，可以保存指定ty类型的数据的列表，ty类型也可以是另一个`list<ty>`，可以理解是C++中的List模板类；
+
+\- `class`：指定一些类型数据的集合表示，必须用def或defm来使用这个类定义记录之后，内部数据才被分配。用来声明多个记录的共有信息，支持继承和重载等特性；
+
+\- `dag`：表示可嵌套的有向无环图元素；
+
+原文中指出：当前这些数据类型已经足够使用，如果日后还添加其他数据类型，再另行发布（我也不知道会不会更新这篇文章，以官方为准）
+
+**值与表达式**
+
+- `?`: 用于表示一个未初始化或者未定义的值，通常用于占位符，表示该值将在后续定义中被赋予具体值。
+
+```
+// Register.td
+class Register {
+  string Name;
+  bits<5> RegID;
+}
+
+def UNDEF_REG : Register {
+  Name = "UNDEF";
+  RegID = ?; // 未定义的 RegID
+}
+```
+
+比如上面的代码中，我们定义了一个`Registry(寄存器)`类。通过def会有一个具体的寄存器类的定义，通过用`RegID=?`表示尚未定义，也就是一个 **占位符**.
+
++ `0b1111`、`15`、`0xF`： 分别是位值、十进制、十六进制的表示。
+
+对于十六进制能够用`bits<>`存储
+
+```
+//比如bits<8>来表示`0x7F`
+bits<8> RegID
+RegID = 0x7F
+//最后打印RegID得到的结果是01111111
+```
+
+
++ `"fool"`: 双引号字符串能够直接赋值给`string`或者`code`类型的属性。
++ `[{...}]`: 大括号方括号包裹的内容通常是 **代码片段**，使用`code`类型
+
+```
+class Register {
+  string Name;
+  bits<8> RegID;
+  code Desc;
+}
+
+def UNDEF_REG:Register {
+  let Name = "UNDEF";
+  let RegID = 0x7F; // 未定义的 RegID
+  let Desc = [{
+    This is a desc
+  }];
+}
+```
+
+可以看到适用于需要嵌入描述或者代码片段的场景。
+
++ [X,Y,Z]<type>:列表 ——定义一个列表，`type` 指定列表中元素的类型。通常可以省略 `<type>`，前端会自动推断。
+
+```
+//比如定义了很多个Register,R1,R2,R3
+let list = [R1,R2,R3];
+let list2 = [R1,R2,R3]<Register>;
+```
+
++ {a,b,c}——用于初始化bits<n>
+
+```
+bits<4> Opcode;
+Opcode = {1, 1, 0, 1};
+```
+
++ value{x}: 截取value中的第x位
+
+```
+// Instruction.td
+class Instruction {
+  string Name;
+  bits<8> Opcode;
+  bits<1> OpcodeBit0;
+  string Description;
+}
+
+def ADD : Instruction {
+  Name = "ADD";
+  Opcode = 0x1A; // 00011010
+  OpcodeBit0 = Opcode{0}; // 截取第0位（0）
+  Description = "Add two registers";
+}
+```
+
+**value{x-y}**的意思就是截取value第x位到第y位。
+
++ DEF： 引用记录
+
+直接引用一个已定义的记录（如指令、寄存器等）。适用于需要整体引用记录的场景。
+
+```
+//定义一个记录叫ADD
+def ADD : Instruction {
+  Name = "ADD";
+  Opcode = 0x1A;
+  Description = "Add two registers";
+}
+//另定义一个记录，并引用ADD
+def USE_ADD_RECORD : Instruction {
+  Name = "USE_ADD_RECORD";
+  Opcode = ADD; // 引用 ADD 记录
+  Description = "Use ADD Opcode Record";
+}
+```
+
++ `匿名定义的引用`:通过指定模板参数，定义一个匿名记录，并引用该记录。适用于临时定义不需要命名的记录。
+
+```
+//比如一个类叫Instruction
+//现在在该类的一个记录中引用一个匿名定义
+// Instruction.td
+class Instruction {
+  string Name;
+  bits<8> Opcode;
+  string Description;
+}
+
+def ANON_DEF : Instruction {
+  Name = "ANON";
+  Opcode = Instruction<"ANON", 0xFF, "Anonymous Instruction">; // 匿名定义
+  Description = "Anonymous Instruction";
+}
+```
+
++ 列表切片: List[x-y,z, m-n]
+
+上面的意思就是取了List的第x到第y位，z位，以及第m到第n位置。
+
+**类与定义**
+
+类和定义是TablenGen中重要的信息承载类型，也叫做记录：
+
+```
+class C { bit V = 1; }
+def X : C;
+def Y : C {
+	string Greeting = "hello";
+}
+```
+
+`X`与`Y`是定义的两个记录，它们有相同的信息`V`。类`C`用于实现了它们的共有部分。
+
+对于已经定义好了的值，我们使用`let`来覆盖。
+
+TableGen提供了这种含参类的功能，允许给类传参。**模版类**中的值是在实现记录时绑定的。比如下边例子：
+
+```text
+class FPFormat<bits<3> val> {
+	bits<3> Value = val;
+}
+def NotFP 		 : FPFormat<0>;
+def ZeroFP 		 : FPFormat<1>;
+def OneArgFP   : FPFormat<2>;
+def OneArgFPRW : FPFormat<3>;
+def TwoArgFP   : FPFormat<4>;
+def CompareFP  : FPFormat<5>;
+def CondMovFP  : FPFormat<6>;
+def SpecialFP  : FPFormat<7>;
+```
+
+这个例子中，实现了一个类似enum的模式，不同的记录中的Value值不同。
+
+**multiclass？**
+
+`multiclass`并不是指多个类，而是指用一个类结构来实现多个类的功能。
+
+
+**文件相关**
+
+思一样。要包含的文件名用`""`包含。比如：
+
+```text
+include "foo.td"
+```
+
+需要注意的是，没有`#`开头，**因为TableGen里边没有C系的预处理概念。**

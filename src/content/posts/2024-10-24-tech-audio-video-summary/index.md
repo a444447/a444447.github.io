@@ -1,0 +1,160 @@
+---
+title: "总结"
+date: 2024-10-24
+description: "第二章总结"
+category: "技术"
+tags:
+  - "技术"
+  - "音视频"
+  - "tech"
+draft: false
+---
+
+## 第二章总结
+
+课程的第二章主要是构建了几个工具类： 
+
++ `ConfReader`: 主要负责的是读取配置。
++ `GlobalCtl`: 这是类是一个 **单例类**，负责管理线程池、配置读取等等功能，对外我们不会每次单独创建线程池类、配置类或者是下级服务管理类，而是使用该类 **统一管理**。
++ `ECThread`: 这是一个管理线程的类，它提供创建线程、分离线程、等待线程、终止线程的功能。
++ `ThreadPool`: 提供线程池类，负责当有任务进来的时候从线程池中分配一个线程处理，当任务完成后回收线程一系列工作。
+
+**讨论一些细节问题**
+
+1. `ThreadPool`类中有很多静态的属性，比如: `static pthread_mutex_t m_queueLock;`。问题是这是在`ThreadPool.h`中定义的，但是在`ThreadPool.cpp`中为什么需要重新定义一次?
+
+> 类的静态成员在类中只是声明，而不会分配内存。为了占有内存并在整个程序运行过程中都存在，需要在类外进行定义。
+>
+> 如果声明为 **const static int/enum**则可以在类内部就定义
+>
+> 另外constexpr，如果你使用`constexpr`修饰符，C++11及以后的标准允许你直接在类内部初始化所有静态成员（包括浮点型），因为`constexpr`要求编译期常量。
+>
+> ```c++
+> //constexpr修饰的函数必须是纯函数，也就是说不需要运行时提供的信息，比如动态分配操作就不运行
+> constexpr int square(int x) {
+>     return x * x;
+> }
+> ```
+
+
+### 本章所用的一些库函数
+
+#### <pthread.h>
+
+pthread.h是POSIX标准线程库的头文件。
+
+**`pthread_attr_t`** ：是pthread中定义的一种数据类型，用于指定线程属性。主要通过初始化它来设置线程的栈大小、优先级的等等，还可以设定线程是`joinable`还是`detachable`
+
+一些相关的函数:
+
+**初始化与销毁**：
+
+- `pthread_attr_init(pthread_attr_t *attr)`：初始化线程属性对象。
+- `pthread_attr_destroy(pthread_attr_t *attr)`：销毁线程属性对象。
+
+**设置线程分离状态**：
+
+- `pthread_attr_setdetachstate(pthread_attr_t *attr, int detachstate)`：设置线程的分离状态为 `PTHREAD_CREATE_DETACHED` 或 `PTHREAD_CREATE_JOINABLE`。
+- `pthread_attr_getdetachstate(const pthread_attr_t *attr, int *detachstate)`：获取线程的分离状态。
+
+**设置栈大小**：
+
+- `pthread_attr_setstacksize(pthread_attr_t *attr, size_t stacksize)`：设置线程栈的大小。
+- `pthread_attr_getstacksize(const pthread_attr_t *attr, size_t *stacksize)`：获取线程栈的大小。
+
+**设置调度策略和优先级**：
+
+- `pthread_attr_setschedpolicy(pthread_attr_t *attr, int policy)`：设置线程调度策略，如 `SCHED_FIFO`、`SCHED_RR`、`SCHED_OTHER`。
+- `pthread_attr_setschedparam(pthread_attr_t *attr, const struct sched_param *param)`：设置线程优先级。
+
+一般来说创建线程的流程如下
+
+```cpp
+//1.先定义一个线程和线程属性，然后初始化线程属性。
+pthread_t pid;
+pthread_attr_t attr;
+// 初始化属性对象
+pthread_attr_init(&attr);
+
+// 设置线程为分离状态
+pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+//2.然后就是创建线程
+auto res = pthread(&pid, &attr, threadFunc, nullptr);
+
+//3.如果要摧毁属性对象:需要注意的是attr的作用只是相当于一种配置参数，当我们用该配置参数创建了一个线程后，即使attr被销毁线程也没影响，因为它只是相当于一种配置参数。
+pthread_attr_destory(&attr);
+
+//4.主线程等待（在此示例中，因为是分离的线程，主线程无需等待）
+pthread_exit(nullptr);
+```
+
++ **pthread_self**:  该函数返回调用线程的ID(`pthread_t`类型)。
++ **pthread_join**: 当调用该函数的时候，调用线程会阻塞，直到目标线程结束。这个函数还可以获取目标线程的退出状态。
+
+```
+//retval:指向一个指针，用于存储目标线程的返回值。如果不需要，可以传递 nullptr。
+//返回值，当返回0时成功，失败时返回错误代码。
+int pthread_join(pthread_t thread, void** retval);
+
+```
+
++ **pthread_cancel**: `pthread_cancel()` 用于向指定的线程发送取消请求。这个请求并不会立即终止线程，而是设置一个取消请求标记。线程需要在合适的取消点（比如执行阻塞的系统调用时）自行检查是否有取消请求，并做出响应。
+
+#### <semaphore.h>
+
+`semaphore.h`是一个负责提供在多线程中使用的信号量的函数。
+
+核心的数据类型是: `sem_t`，它是表示信号量的数据类型。`sem_t`类型的变量用于管理信号量的计数与同步工作。
+
++ `sem_init`: 初始化信号量
+
+```cpp
+int sem_init(sem_t *sem, int pshared, unsigned int value);
+sem：指向需要初始化的信号量。
+pshared：指明信号量是否在进程间共享（传 0 表示不共享，即只在线程内共享）。
+value：信号量的初始值。
+```
+
++ `sem_destory`: `int sem_destroy(sem_t *sem);`.注意它应该只在所有线程都不适用该信号量的时候才调用，避免出现未定义。
++ `sem_wait`： `sem_wait` 函数用于将信号量的值减 1。如果信号量的值为 0，则调用线程将被阻塞，直到信号量的值大于 0。如果多个线程同时等待同一个信号量，它们将按照调用顺序被唤醒。
+
++ `sem_trywait`: 它与`sem_wait`有点类似，只不过是非阻塞的。也就是说如果信号量为0它不会阻塞而是直接返回错误。
++ `sem_post(sem_t *sem)`:  用于将信号量的值加 1，并唤醒等待该信号量的线程（如果有的话）。这通常表示线程已经完成了对共享资源的使用。
+
++ `sem_getvalue(sem_t *sem, int *sval)`:用于获取当前信号量的值，并将其存储在 `sval` 所指向的整数中。
+
+## 第三章
+
+第三章主要讲的是pjsip库的使用。
+
+PJSIP 是一个开源的多媒体通信库，主要用于实现 SIP（Session Initiation Protocol）和媒体传输功能。它的核心功能包括：
+
+1. **SIP 信令**：PJSIP 提供了完整的 SIP 协议实现，支持注册、呼叫建立、呼叫控制和其他 SIP 功能。
+2. **媒体传输**：支持音频、视频和即时消息传输，使用 RTP（Real-time Transport Protocol）进行媒体流的传输。
+3. **跨平台**：PJSIP 可以在多种操作系统上运行，包括 Windows、Linux、macOS 和移动设备（如 Android 和 iOS）。
+4. **高性能**：PJSIP 在设计时考虑了性能和资源效率，适合嵌入式系统和大规模应用。
+5. **可扩展性**：提供丰富的 API 接口，支持多种功能扩展和第三方集成。
+
+> SIP是一种应用层信令协议，用于建立、修改和终止多媒体会话，如音频通话、视频会议和即时消息。SIP 是互联网工程任务组（IETF）制定的标准，广泛应用于 VoIP（Voice over IP）和其他实时通信应用。
+
+第三章中主要会使用的是`pjlib-util.h`,`pjsip.h`,`pjsip_ua.h`,`pjsip/sip_auth.h`,`pjlib.h`
+
+**`pjlib-util.h`**：
+
+- 这是 PJSIP 的实用工具库的头文件，提供了多种常用的辅助功能和数据结构，包括字符串处理、内存管理、时间处理等。这些功能在 PJSIP 的其他组件中被广泛使用。
+
+**`pjsip.h`**：
+
+- 这是 PJSIP 的核心头文件，包含了 SIP 协议的基本功能和结构。它定义了 SIP 消息的处理、会话的管理以及基本的 SIP 功能，是使用 PJSIP 开发 SIP 应用的基础。
+
+**`pjsip_ua.h`**：
+
+- 该头文件专注于用户代理（User Agent）的实现，提供了用户代理的相关功能，包括注册、呼叫管理、状态管理等。它允许开发者创建和管理 SIP 用户代理实例，处理呼叫的发起和接收。
+
+**`pjsip/sip_auth.h`**：
+
+- 这个头文件提供了与 SIP 认证相关的功能，定义了处理 SIP 认证和授权的结构和函数。它支持基本的认证机制，如 Digest 认证，帮助用户代理在与服务器进行通信时进行身份验证。
+
+**`pjlib.h`**：
+
+- 这是 PJSIP 的底层库头文件，提供了基本的功能支持，包括任务调度、事件处理、网络编程等。它为 PJSIP 提供了一个高效的运行时环境，支持多线程和异步操作。

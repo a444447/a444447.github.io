@@ -1,0 +1,331 @@
+# Hugo Migration Report
+
+Mode: write
+Source: `/Users/afourseven/blog/content/posts`
+Target: `/Users/afourseven/GitSpace/afourblog/src/content/posts`
+
+- Total markdown files: 64
+- Will migrate: 50
+- Skipped: 14
+- With issues: 6
+
+## Migrating
+
+- `algorithm/day0_数组-二分查找.md` -> `2024-05-28-algorithm-day0-array-binary-search/`
+  - title: day0_数组-二分查找
+  - date: 2024-05-28
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 二分查找
+- `algorithm/day0_数组-移除元素.md` -> `2024-05-28-algorithm-day0-array-remove-element/`
+  - title: day0_数组-移除元素
+  - date: 2024-05-28
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 移除元素
+- `algorithm/day10_字符串-翻转单词and右旋转.md` -> `2024-06-18-algorithm-day10-string-reverse-words-and-right-rotate/`
+  - title: Day10_字符串 翻转单词and右旋转
+  - date: 2024-06-18
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 翻转字符串里的单词
+- `algorithm/day11_字符串-实现KMPand重复子字符串.md` -> `2024-06-19-algorithm-day11-string-implement-kmpand-repeated-substring/`
+  - title: Day11_字符串 实现KMPand重复子字符串
+  - date: 2024-06-19
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 实现substr
+- `algorithm/day12_栈与队列-实现and有效的括号.md` -> `2024-06-27-algorithm-day12-stack-queue-implement-and-valid-parentheses/`
+  - title: Day12_栈与队列 实现and有效的括号
+  - date: 2024-06-27
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 栈与队列的实现
+- `algorithm/day13_栈与队列-删除相邻重复and逆波兰and滑动窗口最大值.md` -> `2024-07-01-algorithm-day13-stack-queue-remove-adjacent-duplicates-and-rpn-and-sliding-window-maximum/`
+  - title: Day13_栈与队列 删除相邻重复and逆波兰and滑动窗口最大值
+  - date: 2024-07-01
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 删除字符串中的所有相邻重复项
+- `algorithm/day14_栈与队列-前k个高频元素.md` -> `2024-07-02-algorithm-day14-stack-queue-top-k-frequent/`
+  - title: Day14_栈与队列 前k个高频元素
+  - date: 2024-07-02
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 前K个高频元素
+- `algorithm/day15_二叉树-层次遍历IandII.md` -> `2024-07-03-algorithm-day15-binary-tree-level-order-iandii/`
+  - title: Day15_二叉树 层次遍历IandII
+  - date: 2024-07-03
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 二叉树层次遍历I
+- `algorithm/day16_二叉树-层次遍历续.md` -> `2024-07-07-algorithm-day16-binary-tree-level-order-continued/`
+  - title: Day16_二叉树 层次遍历续
+  - date: 2024-07-07
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 给定一个二叉树的 **根节点** `root`，想象自己站在它的右侧，按照从顶部到底部的顺序，返回从右侧所能看到的节点值。
+- `algorithm/day17_二叉树-翻转二叉树.md` -> `2024-07-08-algorithm-day17-binary-tree-reverse-binary-tree/`
+  - title: Day17_二叉树 翻转二叉树
+  - date: 2024-07-08
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 给你一棵二叉树的根节点 `root` ，翻转这棵二叉树，并返回其根节点。
+- `algorithm/day18_二叉树-第二周.md` -> `2024-07-09-algorithm-day18-binary-tree-week-2/`
+  - title: Day18_二叉树 第二周
+  - date: 2024-07-09
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 对称二叉树
+- `algorithm/day19_回溯-第一周.md` -> `2024-07-25-algorithm-day19-backtracking-week-1/`
+  - title: Day19_回溯 第一周
+  - date: 2024-07-25
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 这是回溯算法的第一周。有关回溯算法，它大部分时候是用来解决 **组合、排列等**问题，也就是很多时候我们找不到特别好的思路，回溯可以穷举所有的选项。
+- `algorithm/day1_数组-有序数组的平方.md` -> `2024-05-29-algorithm-day1-array-sorted-squares/`
+  - title: Day1_数组 有序数组的平方
+  - date: 2024-05-29
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 有序数组的平方
+- `algorithm/day1_数组-长度最小的子数组.md` -> `2024-05-29-algorithm-day1-array-minimum-size-subarray-sum/`
+  - title: Day1_数组 长度最小的子数组
+  - date: 2024-05-29
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 给定一个含有 `n` 个正整数的数组和一个正整数 `target` **。**
+- `algorithm/day20_回溯-第二周.md` -> `2024-08-02-algorithm-day20-backtracking-week-2/`
+  - title: Day20_回溯 第二周
+  - date: 2024-08-02
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 组合总和 II
+- `algorithm/day21_贪心-第一周.md` -> `2024-08-07-algorithm-day21-greedy-week-1/`
+  - title: Day21_贪心- 第一周
+  - date: 2024-08-07
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 贪心算法就是在每一面临 *选择*的时候，都选择 **局部最优解**。比如有一沓钞票，一共可以拿十张，如何拿得最多？当然是每次拿都拿该沓钞票现有的最大面额。
+- `algorithm/day22_贪心-第二周.md` -> `2024-08-08-algorithm-day22-greedy-week-2/`
+  - title: Day22_贪心- 第二周
+  - date: 2024-08-08
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 加油站
+- `algorithm/day23_动态规划-第一周.md` -> `2024-08-08-algorithm-day23-dynamic-programming-week-1/`
+  - title: Day23_动态规划- 第一周
+  - date: 2024-08-08
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 动态规划问题的关键点在于状态、状态转移公式。在动态规划中，一个状态是由其上一个状态根据推导公式得到的。在进行动态规划的时候心里一定要自己清楚整个过程。
+- `algorithm/day24_动态规划-第二周.md` -> `2024-08-11-algorithm-day24-dynamic-programming-week-2/`
+  - title: Day23_动态规划- 第二周
+  - date: 2024-08-11
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 这周的动态规划先从0-1背包问题讲起
+- `algorithm/day25_动态规划-第三周.md` -> `2024-08-13-algorithm-day25-dynamic-programming-week-3/`
+  - title: Day23_动态规划- 第三周
+  - date: 2024-08-13
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 继续来看有关DP的问题
+- `algorithm/day26_动态规划-第四次.md` -> `2024-08-15-algorithm-day26-dynamic-programming-part-4/`
+  - title: Day26_动态规划- 第四次
+  - date: 2024-08-15
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 下面我们将来讨论 *买卖股票的最佳时机*系列任务。
+- `algorithm/day27_动态规划-第五次-子序列.md` -> `2024-08-20-algorithm-day27-dynamic-programming-part-5-subsequence/`
+  - title: Day27_动态规划- 第五次-子序列
+  - date: 2024-08-20
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 这部分内容开始讨论有关 子序列的DP问题
+- `algorithm/day28_单调栈.md` -> `2024-08-28-algorithm-day28-monotonic-stack/`
+  - title: Day27_动态规划- 第五次-子序列
+  - date: 2024-08-28
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: **这部分内容开始讨论有关单调栈的问题**
+- `algorithm/day29_图论-第一周.md` -> `2024-09-01-algorithm-day29-graph-week-1/`
+  - title: Day29_图论-第一周
+  - date: 2024-09-01
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 对于图的概念就先不回顾了，离散数学已经讲过很多。对于已经忘记了的部分就按算法的顺序开始逐渐回忆吧。
+- `algorithm/day2_数组-螺旋矩阵与总结.md` -> `2024-05-30-algorithm-day2-array-spiral-matrix-summary/`
+  - title: Day2_数组 螺旋矩阵II与总结
+  - date: 2024-05-30
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 螺旋矩阵II
+- `algorithm/day30_图论-并查集.md` -> `2024-09-11-algorithm-day30-graph-union-find/`
+  - title: Day30_图论 并查集
+  - date: 2024-09-11
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 并查集的主要使用场景有两点：
+- `algorithm/day3_链表-移动and设计链表元素.md` -> `2024-06-01-algorithm-day3-linked-list-move-and-design-linked-list/`
+  - title: Day3_链表 移动and设计链表元素
+  - date: 2024-06-01
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 题意：删除链表中等于给定值 val 的所有节点。
+- `algorithm/day4_链表-翻转and交换.md` -> `2024-06-03-algorithm-day4-linked-list-reverse-and-swap/`
+  - title: Day4_链表 翻转and交换
+  - date: 2024-06-03
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 翻转链表
+- `algorithm/day5_链表-删除and相交and环形.md` -> `2024-06-04-algorithm-day5-linked-list-remove-and-intersection-and-cycle/`
+  - title: Day5_链表 删除and相交and环形
+  - date: 2024-06-04
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 删除链表的倒数第N个节点
+- `algorithm/day6_哈希表-数组交集and快乐数and两数之和.md` -> `2024-06-11-algorithm-day6-hash-table-array-intersection-and-happy-number-and-two-sum/`
+  - title: Day6_哈希表 数组交集and快乐数and两数之和
+  - date: 2024-06-11
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 两个数组的交集
+- `algorithm/day6_哈希表-有效字母异位词.md` -> `2024-06-06-algorithm-day6-hash-table-valid-anagram/`
+  - title: Day6_哈希表 有效字母异位词
+  - date: 2024-06-06
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 有效字母异位词
+- `algorithm/day7_哈希表-四数相加IIand赎金信.md` -> `2024-06-12-algorithm-day7-hash-table-four-sum-count-iiand-ransom-note/`
+  - title: Day7_哈希表 四数相加IIand赎金信
+  - date: 2024-06-12
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 四数相加II
+- `algorithm/day8_哈希表-三数and四数之和.md` -> `2024-06-16-algorithm-day8-hash-table-three-sum-and-four-sum/`
+  - title: Day8_哈希表 三数and四数之和
+  - date: 2024-06-16
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 三数之和
+- `algorithm/day9_字符串-反转字符串IandII.md` -> `2024-06-17-algorithm-day9-string-reverse-string-iandii/`
+  - title: Day9_字符串 反转字符串and替换数字
+  - date: 2024-06-17
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 反转字符串I
+- `algorithm/intro.md` -> `2024-05-26-algorithm-intro/`
+  - title: Intro
+  - date: 2024-05-26
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 迁移自旧版 Hugo 博客。
+- `algorithm/前缀树.md` -> `2024-10-16-algorithm-trie/`
+  - title: 前缀树
+  - date: 2024-10-16
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 迁移自旧版 Hugo 博客。
+- `algorithm/记录.md` -> `2024-11-07-algorithm-notes/`
+  - title: 记录
+  - date: 2024-11-07
+  - category: 技术
+  - tags: 算法, algorithm
+  - description: 位运算题目
+- `dl-learning/仿真/仿真调研.md` -> `2024-07-02-dl-learning-simulation-simulation-research/`
+  - title: 仿真调研
+  - date: 2024-07-02
+  - category: 生活
+  - tags: 研究生, 仿真, dl-learning
+  - description: 3d Gaussain splatting
+- `dl-learning/大模型/gpt2架构.md` -> `2024-09-08-dl-learning-llm-gpt2-architecture/`
+  - title: gpt2架构
+  - date: 2024-09-08
+  - category: 技术
+  - tags: 大模型, dl-learning
+  - description: 这部分来看下gpt2的架构是怎么样的
+- `dl-learning/大模型/llm架构.md` -> `2024-08-06-dl-learning-llm-llm-architecture/`
+  - title: llm架构
+  - date: 2024-08-06
+  - category: 技术
+  - tags: 大模型, dl-learning
+  - description: 大模型的架构主要是按照下面的roadmap,本文主要是针对第一部分, **The LLM architecture**
+- `dl-learning/大模型/tokenization.md` -> `2024-09-05-dl-learning-llm-tokenization/`
+  - title: tokenization
+  - date: 2024-09-05
+  - category: 技术
+  - tags: 大模型, dl-learning
+  - description: 在训练模型的时候，我们还有重要的一个步骤是如何把数据转换为模型能够训练的格式，这也是tokenization的意义所在。
+- `llvm/为cpu0实现llvm后端.md` -> `2024-11-14-llvm-llvm-backend-for-cpu0/`
+  - title: 为cpu0实现llvm后端
+  - date: 2024-11-14
+  - category: 技术
+  - tags: 编译器, llvm
+  - description: 这是记录如何实现一个cpu0架构的llvm后端。
+- `llvm/入门.md` -> `2024-10-17-llvm-intro/`
+  - title: 入门
+  - date: 2024-10-17
+  - category: 技术
+  - tags: 编译器, llvm
+  - description: LLVM, 最初是「low level virtual machine」的缩写，因为一开始只是以为作为一个优化方面的项目，但是后面变成编译器了，于是这个说法就没有了，但是简称还是保留了下来。
+- `llvm/编写一个LLVM后端.md` -> `2024-11-12-llvm-write-an-llvm-backend/`
+  - title: 编写一个LLVM后端
+  - date: 2024-11-12
+  - category: 技术
+  - tags: 编译器, llvm
+  - description: 在之前，我们已经知道了llvm框架的大致流程: **源代码->llvm中间表示(IR)->IR linker->LLVM后端->目标代码。**
+- `tech/cmake入门.md` -> `2024-05-29-tech-cmake-intro/`
+  - title: Cmake入门
+  - date: 2024-05-29
+  - category: 技术
+  - tags: 技术, tech
+  - description: 旨在简单入门cmake的常用语法
+- `tech/golang/go-map.md` -> `2023-07-30-tech-golang-go-map/`
+  - title: Go Map
+  - date: 2023-07-30
+  - category: 技术
+  - tags: 技术, golang, tech
+  - description: 迁移自旧版 Hugo 博客。
+- `tech/harness/anthropic_harness_talk.md` -> `2026-04-03-tech-harness-anthropic-harness-talk/`
+  - title: anthropic谈harness
+  - date: 2026-04-03
+  - category: 技术
+  - tags: 技术, harness工程, tech, harness
+  - description: 本篇记录一下anthropic对于harness工程的讲解。
+- `tech/mit6824/lab记录.md` -> `2025-02-02-tech-mit6824-lab-notes/`
+  - title: Lab记录
+  - date: 2025-02-02
+  - category: 技术
+  - tags: 技术, tech, mit6824
+  - description: lab1
+- `tech/mit6824/笔记.md` -> `2025-01-23-tech-mit6824-notes/`
+  - title: 笔记
+  - date: 2025-01-23
+  - category: 技术
+  - tags: 技术, mit6824, tech
+  - description: 这是在学习mit6824课程中的笔记
+  - local assets: aa9338aa-a141-4fdb-afa1-dbc97b8dd1b5.png, 91bb3e20-cd86-40f6-b76f-20b1b70030dd.png, JzXWDq.png, bng8ou.png, b616ba77-ff72-4c50-9490-74dd5259a702.png, zbojsM.png, f7VXgC.png
+- `tech/音视频/总结.md` -> `2024-10-24-tech-audio-video-summary/`
+  - title: 总结
+  - date: 2024-10-24
+  - category: 技术
+  - tags: 技术, 音视频, tech
+  - description: 第二章总结
+
+## Skipped
+
+- `_index.md`: explicit skip; missing date
+- `dl-learning/cs231n/cnn_visualization.md`: draft true
+- `dl-learning/cs231n/gan_basic.md`: draft true
+- `dl-learning/cs231n/rnn_basic.md`: draft true
+- `dl-learning/ml/svm.md`: draft true
+- `dl-learning/大模型/InternLM.md`: draft true
+- `dl-learning/大模型/attention机制.md`: missing title; missing date
+- `hello-world.md`: explicit skip; draft true
+- `llvm/kaleidoscope.md`: missing title; missing date
+- `tech/efftective_cpp.md`: invalid draft value: trues
+- `tech/harness/asset/harness-design-long-running-application-development.zh-CN.md`: missing title; missing date
+- `tech/zzz-demo.md`: explicit skip; draft true
+- `tech/建站技术/write-shortcodes.md`: explicit skip; unconverted shortcode remains
+- `杂文/无题01.md`: draft true
