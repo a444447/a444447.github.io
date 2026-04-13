@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getAllTags, getPublishedPosts } from '../lib/content';
+
+const posts = await getPublishedPosts();
+const tags = getAllTags(posts);
+---
+
+<BaseLayout title="标签 | afourblog">
+  <p class="mb-6 select-none font-mono text-[9.5px] uppercase tracking-[0.16em] text-ink-muted dark:text-night-muted">Tags</p>
+  <h1 class="fvar-h1 mb-6 font-fraunces text-[60px] font-black leading-[1.2] tracking-tight">标签</h1>
+  <ul class="space-y-4">
+    {tags.map((tag) => {
+      const count = posts.filter((post) => post.data.tags.includes(tag)).length;
+      return (
+        <li>
+          <a
+            href={`/tags/${tag}`}
+            class="flex items-center justify-between rounded-[8px] border border-ink-faint px-5 py-4 transition-all duration-150 ease-out hover:border-ink-muted hover:shadow-[0_2px_16px_rgba(0,0,0,0.05)] dark:border-night-border dark:hover:border-night-muted dark:hover:shadow-[0_2px_16px_rgba(0,0,0,0.35)]"
+          >
+            <span class="font-fraunces text-[24px] font-semibold leading-[1.3] tracking-tight">#{tag}</span>
+            <span class="font-mono text-[9.5px] uppercase tracking-[0.11em] text-ink-muted dark:text-night-muted">{count} posts</span>
+          </a>
+        </li>
+      );
+    })}
+  </ul>
+</BaseLayout>

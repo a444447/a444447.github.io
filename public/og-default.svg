@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="afourblog">
+  <rect width="1200" height="630" fill="#FAF9F5"/>
+  <filter id="n">
+    <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch"/>
+  </filter>
+  <rect width="1200" height="630" filter="url(#n)" opacity="0.025"/>
+  <line x1="430" y1="370" x2="770" y2="370" stroke="#C96442" stroke-width="6" stroke-linecap="round"/>
+  <text x="600" y="315" text-anchor="middle" fill="#1F1F1C" font-family="Fraunces, Georgia, serif" font-size="108" font-weight="900">afourblog</text>
+  <text x="600" y="430" text-anchor="middle" fill="#7A7A72" font-family="Newsreader, Georgia, serif" font-size="34">技术、读书、生活与随笔。</text>
+</svg>

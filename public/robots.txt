@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://a444447.github.io/sitemap-index.xml
+

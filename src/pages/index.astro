@@ -1,0 +1,20 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/static/PostCard';
+import { getPublishedPosts } from '../lib/content';
+
+const posts = await getPublishedPosts();
+---
+
+<BaseLayout title="afourblog">
+	<section class="mb-14">
+		<p class="mb-6 select-none font-mono text-[9.5px] uppercase tracking-[0.16em] text-ink-muted dark:text-night-muted">Recent Posts</p>
+		<h1 class="fvar-h1 mb-6 font-fraunces text-[60px] font-black leading-[1.2] tracking-tight">afourblog</h1>
+		<p class="font-news text-[18px] leading-[2] text-ink-muted dark:text-night-muted">技术、读书、生活与随笔。</p>
+	</section>
+	<section class="space-y-6">
+		{posts.map((post) => (
+			<PostCard post={post} />
+		))}
+	</section>
+</BaseLayout>

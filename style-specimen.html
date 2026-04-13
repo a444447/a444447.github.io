@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog — Style Specimen</title>
+
+  <!-- Fonts: Fraunces (var), Newsreader (var), JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Newsreader:ital,opsz,wght@0,6..72,300..800;1,6..72,300..800&family=JetBrains+Mono:wght@400;500&family=Noto+Serif+SC:wght@400;700;900&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CDN (play mode — supports custom theme config) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            paper:   '#FAF9F5',
+            ink:     { DEFAULT: '#1F1F1C', muted: '#7A7A72', faint: '#C8C7C0' },
+            accent:  { DEFAULT: '#C96442', hover: '#B55536' },
+            night:   { DEFAULT: '#0A0A0A', surface: '#0F0F0D', text: '#EDECEA', muted: '#888880', border: '#242421' },
+          },
+          fontFamily: {
+            fraunces: ['Fraunces', '"Noto Serif SC"', 'Georgia', 'serif'],
+            news:     ['Newsreader', '"Noto Serif SC"', 'Georgia', 'serif'],
+            mono:     ['"JetBrains Mono"', 'Menlo', 'monospace'],
+          },
+        },
+      },
+    }
+  </script>
+
+  <!-- React 18 + Babel standalone -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; -webkit-font-smoothing: antialiased; }
+
+    /* Fraunces variable-font optical-size per heading level */
+    .fvar-h1 { font-variation-settings: 'opsz' 144, 'SOFT' 8; }
+    .fvar-h2 { font-variation-settings: 'opsz' 72,  'SOFT' 6; }
+    .fvar-h3 { font-variation-settings: 'opsz' 36,  'SOFT' 4; }
+
+    /* Syntax-highlight tokens — light */
+    .tk-kw  { color: #B5512E; }
+    .tk-ty  { color: #3878A8; }
+    .tk-str { color: #4E8C68; }
+    .tk-cm  { color: #A09890; font-style: italic; }
+
+    /* Syntax-highlight tokens — dark */
+    .dark .tk-kw  { color: #E08A68; }
+    .dark .tk-ty  { color: #79B0D4; }
+    .dark .tk-str { color: #7DC49A; }
+    .dark .tk-cm  { color: #5A5A52; }
+
+    /* Warm paper grain (subtle) */
+    .grain::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9999;
+    }
+    .dark .grain::after { opacity: 0; }
+
+    ::selection { background: rgba(201, 100, 66, 0.18); }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState } = React;
+
+// ─── Divider ────────────────────────────────────────────────────────────────
+const Rule = () => (
+  <hr className="border-0 border-t border-ink-faint dark:border-night-border my-14" />
+);
+
+// ─── Section label ──────────────────────────────────────────────────────────
+const SLabel = ({ children }) => (
+  <p className="font-mono text-[9.5px] tracking-[0.16em] uppercase text-ink-muted dark:text-night-muted mb-6 select-none">
+    {children}
+  </p>
+);
+
+// ─── Annotation chip (tiny inline metadata) ─────────────────────────────────
+const Chip = ({ children }) => (
+  <span className="font-mono text-[9.5px] tracking-[0.11em] uppercase text-accent border border-accent/30 rounded-[5px] px-1.5 py-[2px] leading-none">
+    {children}
+  </span>
+);
+
+// ─── Syntax-highlighted code block ──────────────────────────────────────────
+const RAW_CODE = `interface Post {
+  id:          string
+  title:       string
+  slug:        string
+  publishedAt: Date
+  category:    'engineering' | 'design' | 'writing'
+  readingTime: number
+}
+
+const formatDate = (date: Date): string =>
+  date.toLocaleDateString('en-US', {
+    month: 'long', year: 'numeric',
+  })`;
+
+function syntaxHL(raw) {
+  return raw
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/'([^']*)'/g,  `<span class="tk-str">'$1'</span>`)
+    .replace(/\b(interface|const|type|export|return|function|extends)\b/g,
+             `<span class="tk-kw">$1</span>`)
+    .replace(/\b(string|number|boolean|Date|void|Post)\b/g,
+             `<span class="tk-ty">$1</span>`);
+}
+
+const CodeBlock = () => {
+  const lines = RAW_CODE.split('\n');
+  return (
+    <div className="rounded-[8px] border border-ink-faint dark:border-night-border overflow-hidden">
+      {/* toolbar */}
+      <div className="flex items-center justify-between px-5 py-3 bg-[#F0EFE9] dark:bg-night-surface border-b border-ink-faint dark:border-night-border">
+        <div className="flex gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-ink-faint dark:bg-night-border" />
+          <span className="w-2.5 h-2.5 rounded-full bg-ink-faint dark:bg-night-border" />
+          <span className="w-2.5 h-2.5 rounded-full bg-ink-faint dark:bg-night-border" />
+        </div>
+        <span className="font-mono text-[9.5px] tracking-wide text-ink-muted dark:text-night-muted">
+          types/post.ts
+        </span>
+      </div>
+      {/* code */}
+      <pre className="m-0 p-5 overflow-x-auto bg-[#F6F5F0] dark:bg-[#0C0C0A] text-ink dark:text-night-text font-mono text-[13.5px] leading-[1.82]">
+        {lines.map((line, i) => (
+          <div key={i} className="flex">
+            <span className="select-none w-6 text-right mr-5 shrink-0 text-[12px] leading-[1.82] text-ink-faint dark:text-night-muted">
+              {i + 1}
+            </span>
+            <span dangerouslySetInnerHTML={{ __html: syntaxHL(line) || '\u00a0' }} />
+          </div>
+        ))}
+      </pre>
+    </div>
+  );
+};
+
+// ─── Article card ────────────────────────────────────────────────────────────
+const ArticleCard = () => (
+  <article className="group cursor-pointer border border-ink-faint dark:border-night-border rounded-[8px] p-8 transition-all duration-150 ease-out hover:border-ink-muted dark:hover:border-night-muted hover:shadow-[0_2px_16px_rgba(0,0,0,0.05)] dark:hover:shadow-[0_2px_16px_rgba(0,0,0,0.35)]">
+    <div className="flex items-center gap-3 mb-5">
+      <Chip>Engineering</Chip>
+      <time className="font-news text-sm text-ink-muted dark:text-night-muted">Apr 11, 2026</time>
+    </div>
+    <h3 className="fvar-h3 font-fraunces font-semibold text-[24px] leading-[1.3] tracking-tight text-ink dark:text-night-text mb-3 transition-colors duration-150 ease-out group-hover:text-accent m-0">
+      The Quiet Discipline of Writing in Public
+    </h3>
+    <p className="font-news text-[16.5px] leading-relaxed text-ink-muted dark:text-night-muted m-0">
+      Notes on building a writing habit without the performance — and why the best
+      posts are the ones you almost didn't publish.
+    </p>
+  </article>
+);
+
+// ─── Main specimen ────────────────────────────────────────────────────────────
+const StyleSpecimen = () => {
+  const [dark, setDark] = useState(false);
+
+  return (
+    <div className={dark ? 'dark' : ''}>
+      <div className="grain relative min-h-screen bg-paper dark:bg-night text-ink dark:text-night-text transition-colors duration-300 ease-out">
+
+        {/* sticky nav */}
+        <header className="sticky top-0 z-20 backdrop-blur-sm bg-paper/90 dark:bg-night/90 border-b border-ink-faint dark:border-night-border transition-colors duration-300">
+          <div className="max-w-[720px] mx-auto px-8 h-14 flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <span className="fvar-h3 font-fraunces font-medium text-[15px] tracking-tight">
+                Style Specimen
+              </span>
+              <span className="font-mono text-[9px] tracking-widest uppercase text-ink-faint dark:text-night-muted">
+                v1
+              </span>
+            </div>
+            <button
+              onClick={() => setDark(d => !d)}
+              className="flex items-center gap-2 font-mono text-[10px] tracking-[0.1em] uppercase text-ink-muted dark:text-night-muted border border-ink-faint dark:border-night-border rounded-[6px] px-3 py-1.5 transition-all duration-150 ease-out hover:border-ink-muted dark:hover:border-night-muted hover:text-ink dark:hover:text-night-text"
+            >
+              {dark ? '☀\u00a0Light' : '◑\u00a0Dark'}
+            </button>
+          </div>
+        </header>
+
+        <main className="max-w-[720px] mx-auto px-8 py-20">
+
+          {/* ── Color palette swatch row ── */}
+          <section className="mb-14">
+            <SLabel>Color Palette</SLabel>
+            <div className="flex gap-3 flex-wrap">
+              {[
+                { bg: 'bg-paper border border-ink-faint',     label: 'Paper',       hex: '#FAF9F5' },
+                { bg: 'bg-ink',                               label: 'Ink',         hex: '#1F1F1C' },
+                { bg: 'bg-ink-muted',                         label: 'Ink Muted',   hex: '#7A7A72' },
+                { bg: 'bg-ink-faint',                         label: 'Ink Faint',   hex: '#C8C7C0' },
+                { bg: 'bg-accent',                            label: 'Accent',      hex: '#C96442' },
+                { bg: 'bg-night border border-ink-faint',     label: 'Night',       hex: '#0A0A0A' },
+                { bg: 'bg-night-text',                        label: 'Night Text',  hex: '#EDECEA' },
+                { bg: 'bg-night-muted',                       label: 'Night Muted', hex: '#888880' },
+              ].map(({ bg, label, hex }) => (
+                <div key={hex} className="flex flex-col gap-2">
+                  <span className={`w-12 h-12 rounded-[7px] block ${bg}`} />
+                  <span className="font-mono text-[9px] tracking-wide text-ink-muted dark:text-night-muted uppercase">{label}</span>
+                  <span className="font-mono text-[9px] text-ink-faint dark:text-night-muted">{hex}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <Rule />
+
+          {/* ── Typography ── */}
+          <section>
+            <SLabel>Typography — Fraunces (Variable)</SLabel>
+            <div className="space-y-8">
+
+              <div>
+                <span className="block font-mono text-[9px] tracking-[0.14em] uppercase text-ink-faint dark:text-night-muted mb-2">
+                  H1 · wght 900 · opsz 144 · 60px
+                </span>
+                <h1 className="fvar-h1 font-fraunces font-black text-[60px] leading-[1.05] tracking-tight m-0 text-ink dark:text-night-text">
+                  On Writing Slowly
+                </h1>
+              </div>
+
+              <div>
+                <span className="block font-mono text-[9px] tracking-[0.14em] uppercase text-ink-faint dark:text-night-muted mb-2">
+                  H2 · wght 600 · opsz 72 · 40px
+                </span>
+                <h2 className="fvar-h2 font-fraunces font-semibold text-[40px] leading-[1.15] tracking-tight m-0 text-ink dark:text-night-text">
+                  Notes on Craft and Patience
+                </h2>
+              </div>
+
+              <div>
+                <span className="block font-mono text-[9px] tracking-[0.14em] uppercase text-ink-faint dark:text-night-muted mb-2">
+                  H3 · wght 400 · opsz 36 · 26px
+                </span>
+                <h3 className="fvar-h3 font-fraunces font-normal text-[26px] leading-[1.38] m-0 text-ink dark:text-night-text">
+                  A few things worth keeping in mind
+                </h3>
+              </div>
+
+            </div>
+          </section>
+
+          <Rule />
+
+          {/* ── Body text ── */}
+          <section>
+            <SLabel>Body Text — Newsreader 18px / lh 1.85</SLabel>
+            <p className="font-news text-[18px] leading-[1.85] text-ink dark:text-night-text m-0">
+              Good writing begins before the first sentence. It lives in the margins
+              of notebooks, in half-formed thoughts at 3&nbsp;am, in the quiet discipline
+              of returning to the desk when the work resists you. The page is patient.
+            </p>
+          </section>
+
+          <Rule />
+
+          {/* ── Chinese Typography ── */}
+          <section>
+            <SLabel>中文排版 — Noto Serif SC</SLabel>
+            <div className="space-y-8">
+
+              <div>
+                <span className="block font-mono text-[9px] tracking-[0.14em] uppercase text-ink-faint dark:text-night-muted mb-2">
+                  H1 · 900 · 60px · 中文
+                </span>
+                <h1 className="font-fraunces font-black text-[60px] leading-[1.2] tracking-normal m-0 text-ink dark:text-night-text">
+                  缓慢写作的艺术
+                </h1>
+              </div>
+
+              <div>
+                <span className="block font-mono text-[9px] tracking-[0.14em] uppercase text-ink-faint dark:text-night-muted mb-2">
+                  H2 · 700 · 40px · 中文
+                </span>
+                <h2 className="font-fraunces font-bold text-[40px] leading-[1.3] tracking-normal m-0 text-ink dark:text-night-text">
+                  关于文字与耐心的思考
+                </h2>
+              </div>
+
+              <div>
+                <span className="block font-mono text-[9px] tracking-[0.14em] uppercase text-ink-faint dark:text-night-muted mb-2">
+                  H3 · 400 · 26px · 中文
+                </span>
+                <h3 className="font-fraunces font-normal text-[26px] leading-[1.5] tracking-normal m-0 text-ink dark:text-night-text">
+                  值得铭记的几件小事
+                </h3>
+              </div>
+
+              <div>
+                <span className="block font-mono text-[9px] tracking-[0.14em] uppercase text-ink-faint dark:text-night-muted mb-2">
+                  正文 · Noto Serif SC 18px / lh 2.0
+                </span>
+                <p className="font-news text-[18px] leading-[2.0] text-ink dark:text-night-text m-0">
+                  好的文字在落笔之前便已开始生长。它藏在笔记本的边角，藏在凌晨三点尚未成形的念头里，
+                  藏在一次次回到书桌前的隐忍与坚持中。页面是耐心的。写作不是表演，
+                  而是一种与沉默长期相处的能力。
+                </p>
+              </div>
+
+            </div>
+          </section>
+
+          <Rule />
+
+          {/* ── Buttons ── */}
+          <section>
+            <SLabel>Buttons</SLabel>
+            <div className="flex items-center gap-3">
+              {/* Primary */}
+              <button className="font-news font-medium text-[15px] bg-accent text-white rounded-[7px] px-5 py-2.5 transition-all duration-150 ease-out hover:bg-accent-hover hover:-translate-y-px active:translate-y-0">
+                Read the post
+              </button>
+              {/* Secondary */}
+              <button className="font-news font-medium text-[15px] border border-ink-faint dark:border-night-border text-ink dark:text-night-text rounded-[7px] px-5 py-2.5 transition-all duration-150 ease-out hover:border-ink-muted dark:hover:border-night-muted hover:-translate-y-px active:translate-y-0">
+                Browse archive
+              </button>
+            </div>
+          </section>
+
+          <Rule />
+
+          {/* ── Article card ── */}
+          <section>
+            <SLabel>Article Card</SLabel>
+            <ArticleCard />
+          </section>
+
+          <Rule />
+
+          {/* ── Code block ── */}
+          <section>
+            <SLabel>Code Block — JetBrains Mono 13.5px</SLabel>
+            <CodeBlock />
+          </section>
+
+          <Rule />
+
+          {/* ── Meta row ── */}
+          <section>
+            <SLabel>Meta Row</SLabel>
+            <div className="flex items-center gap-0 font-news text-[15px] text-ink-muted dark:text-night-muted">
+              <time>Apr 11, 2026</time>
+              <span className="mx-3 text-ink-faint dark:text-night-muted select-none" aria-hidden="true">·</span>
+              <Chip>Engineering</Chip>
+              <span className="mx-3 text-ink-faint dark:text-night-muted select-none" aria-hidden="true">·</span>
+              <span>5 min read</span>
+            </div>
+          </section>
+
+          <div className="h-24" />
+        </main>
+
+        {/* subtle footer */}
+        <footer className="border-t border-ink-faint dark:border-night-border">
+          <div className="max-w-[720px] mx-auto px-8 py-6 flex items-center justify-between">
+            <span className="font-mono text-[9.5px] tracking-[0.14em] uppercase text-ink-faint dark:text-night-muted">
+              Fraunces · Newsreader · JetBrains Mono
+            </span>
+            <span className="font-mono text-[9.5px] tracking-[0.14em] uppercase text-ink-faint dark:text-night-muted">
+              {dark ? 'Dark Mode' : 'Light Mode'}
+            </span>
+          </div>
+        </footer>
+
+      </div>
+    </div>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('root')).render(<StyleSpecimen />);
+</script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  post: CollectionEntry<'posts'>;
+}
+
+const { post } = Astro.props;
+const publishedAt = post.data.date.toLocaleDateString('zh-CN', {
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+});
+---
+
+<BaseLayout title={post.data.title} description={post.data.description} type="article">
+  <article>
+    <header class="mb-14 border-b border-ink-faint pb-8 dark:border-night-border">
+      <div class="mb-5 flex items-center gap-3">
+        <span class="rounded-[5px] border border-accent/30 px-1.5 py-[2px] font-mono text-[9.5px] uppercase leading-none tracking-[0.11em] text-accent">
+          {post.data.category}
+        </span>
+        <time class="font-news text-sm text-ink-muted dark:text-night-muted" datetime={post.data.date.toISOString()}>
+          {publishedAt}
+        </time>
+      </div>
+      <h1 class="fvar-h1 mb-3 font-fraunces text-[60px] font-black leading-[1.2] tracking-tight">{post.data.title}</h1>
+      <p class="font-news text-[18px] leading-[2] text-ink-muted dark:text-night-muted">{post.data.description}</p>
+    </header>
+    <div class="article-prose">
+      <slot />
+    </div>
+  </article>
+</BaseLayout>

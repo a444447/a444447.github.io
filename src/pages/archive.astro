@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/static/PostCard';
+import { getPublishedPosts } from '../lib/content';
+
+const posts = await getPublishedPosts();
+const groups = posts.reduce<Record<string, typeof posts>>((acc, post) => {
+  const year = String(post.data.date.getFullYear());
+  if (!acc[year]) acc[year] = [];
+  acc[year].push(post);
+  return acc;
+}, {});
+const years = Object.keys(groups).sort((a, b) => Number(b) - Number(a));
+---
+
+<BaseLayout title="归档 | afourblog">
+  <p class="mb-6 select-none font-mono text-[9.5px] uppercase tracking-[0.16em] text-ink-muted dark:text-night-muted">Archive</p>
+  <h1 class="fvar-h1 mb-10 font-fraunces text-[60px] font-black leading-[1.2] tracking-tight">归档</h1>
+  <div class="space-y-14">
+    {years.map((year) => (
+      <section>
+        <h2 class="fvar-h2 mb-6 font-fraunces text-[40px] font-semibold leading-[1.3] tracking-tight">{year}</h2>
+        <div class="space-y-6">
+          {groups[year].map((post) => (
+            <PostCard post={post} />
+          ))}
+        </div>
+      </section>
+    ))}
+  </div>
+</BaseLayout>
